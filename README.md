@@ -22,6 +22,6 @@ python app.py
 
 ### Important note 
 
-1. Make sure you are installed ffmpeg
+1. Make sure you are installed `ffmpeg`
 
-Sample tutorial to install ffmpeg on MAC OS : https://superuser.com/questions/624561/install-ffmpeg-on-os-x
+Sample tutorial to install `ffmpeg` on MAC OS : https://superuser.com/questions/624561/install-ffmpeg-on-os-x
