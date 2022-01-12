@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'UA-173468417-1');
+    </script>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Cartoonizer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.3.3/dist/semantic.min.js"></script>
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: whitesmoke;
+            background-image: url("https://www.transparenttextures.com/patterns/lyonnette.png");
+            border-bottom: 0px solid black;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            min-height: 95vh;
+        }
+
+        .upload-file {
+            display: flex;
+            justify-content: center;
+        }
+
+        .wrapper {
+            margin: 10px;
+            padding: 10px;
+            box-shadow: 0 19px 38px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+            border-radius: 10px;
+            background-color: white;
+            width: 415px;
+        }
+
+        /* === Upload Box === */
+        .upload {
+            margin: 10px;
+            height: 85px;
+            border: 8px dashed #e6f5e9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+        }
+
+        .upload p {
+            margin-top: 12px;
+            line-height: 0;
+            font-size: 16px;
+            color: #0c3214;
+            letter-spacing: 1.5px;
+        }
+
+        .upload__button {
+            background-color: #e6f5e9;
+            border-radius: 10px;
+            padding: 0px 8px 0px 10px;
+        }
+
+        .upload__button:hover {
+            cursor: pointer;
+            opacity: 0.8;
+        }
+
+        /* === Uploaded Files === */
+        .uploaded {
+            width: 375px;
+            margin: 10px;
+            background-color: #e6f5e9;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .file {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .file__name {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: baseline;
+            width: 300px;
+            line-height: 0;
+            color: #0c3214;
+            font-size: 18px;
+            letter-spacing: 1.5px;
+        }
+
+        .fa-times:hover {
+            cursor: pointer;
+            opacity: 0.8;
+        }
+
+        .fa-file-pdf {
+            padding: 15px;
+            font-size: 40px;
+            color: #0c3214;
+        }
+
+        .footer {
+            position: absolute;
+            left: 50%;
+            transform: translate(-50%, 50%);
+        }
+
+        .ppp {
+            z-index: 9999;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgb(58 175 83 / 50%);
+            position: absolute;
+        }
+
+        .loader {
+            border: 16px solid #f3f3f3;
+            /* Light grey */
+            border-top: 16px solid #3498db;
+            /* Blue */
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="ppp d-none">
+        <div class="position-relative w-100 h-100">
+            <div id="prepare-loader" class="prepare-loader loader position-absolute translate-middle top-50 start-50">
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="container pt-4">
+        <form id='form' method="post" action="cartoonize" enctype="multipart/form-data">
+            <div class="upload-file">
+                <div class="wrapper">
+                    <div class="upload">
+                        <p><span id='uploadimage' class="upload__button">Select your image here
+                            </span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="upload-file">
+                <div class="wrapper">
+                    <div class="upload">
+                        <p><span id='uploadvideo' class="upload__button">Select your video here (max 30MB)
+                            </span></p>
+                    </div>
+                </div>
+            </div>
+            <input type='file' id='hiddeninputfile' accept="image/*" name='image' style="display: none" />
+            <input type="file" id="hiddeninputvideo" accept="video/*" name='video' style="display: none">
+        </form>
+    </div>
+
+    {%if cartoonized_image or cartoonized_video%}
+    <div class="container">
+
+        <div class="row">
+            {%if cartoonized_image%}
+            <img src="{{cartoonized_image}}" class="img-thumbnail" />
+            {%endif%}
+            {%if cartoonized_video%}
+            <video id="player" class="img-thumbnail" controls>
+                <source type="video/mp4" src="{{cartoonized_video}}">
+            </video>
+            {%endif%}
+        </div>
+
+    </div>
+    {%endif%}
+
+
+    <div class="container mt-5">
+        <h2 class="text-center">Some sample images</h2>
+        <div class="row">
+            <div class="col-md-4 offset-2">
+                <div class="thumbnail">
+                    <img class="w-100"
+                        src="https://lh3.google.com/u/0/d/1onddFzwoIjE3uz4lpRDfA0AyiQyVg0pI=w1920-h976-iv2"
+                        alt="Lights">
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="thumbnail">
+                    <img class="w-100"
+                        src="https://lh3.google.com/u/0/d/1Wd1TU_caX2TQ_HCAuh2uAVSx6jCAA90E=w1920-h976-iv2"
+                        alt="Nature">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 offset-2">
+                <div class="thumbnail">
+                    <img class="w-100"
+                        src="https://lh3.google.com/u/0/d/1xMflAhAFI6hrHlNXnGT6HCXukyvKvi-O=w1920-h976-iv2"
+                        alt="Lights">
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="thumbnail">
+                    <img class="w-100"
+                        src="https://lh3.google.com/u/0/d/1qX6ITgB9z8DOEHC_B-r75tTjXi-BaQb7=w1920-h976-iv2"
+                        alt="Nature">
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-4 offset-2">
+                <div class="thumbnail">
+                    <img class="w-100"
+                        src="https://lh3.google.com/u/0/d/1GqK1qapzDXjR-FrOaLNavJN_P8cZeodv=w1920-h976-iv2"
+                        alt="Lights">
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="thumbnail">
+                    <img class="w-100"
+                        src="https://lh3.google.com/u/0/d/1B57SnDaZkxOxMHEYEYCYqzv0QZ5C3JL9=w1920-h976-iv2"
+                        alt="Nature">
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-4 offset-2">
+                <div class="thumbnail">
+                    <img class="w-100"
+                        src="https://lh3.google.com/u/0/d/1SpQxt-kn4h66prWwOgWsFqr7PNpue4XT=w1920-h976-iv1"
+                        alt="Lights">
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="thumbnail">
+                    <img class="w-100"
+                        src="https://lh3.google.com/u/0/d/1VbKOAhUAnn9Yvzf_SDo63oBaolWBESFm=w1920-h976-iv1"
+                        alt="Nature">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container footer rounded">
+        <footer class="text-center text-lg-start bg-light text-muted">
+            <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
+                © 2021 Copyright:
+                <a class="text-reset fw-bold" href="javascript:;">ICT - HUST</a>
+            </div>
+        </footer>
+    </div>
+
+
+
+    <script>
+        $(document).ready(function () {
+            $("#uploadimage").on("click", function () {
+                $('#hiddeninputfile').click();
+            });
+
+            $("#uploadvideo").on("click", function () {
+                $('#hiddeninputvideo').click();
+            });
+            console.log(document.getElementById("hiddeninputfile"));
+            console.log(document.getElementById("hiddeninputvideo"));
+            document.getElementById("hiddeninputfile").onchange = function () {
+                $('.ppp').removeClass("d-none").addClass('d-block');
+                document.getElementById("form").submit();
+            };
+
+            document.getElementById("hiddeninputvideo").onchange = function () {
+                const fi = document.getElementById('hiddeninputvideo');
+                // Check if any file is selected. 
+                if (fi.files.length > 0) {
+                    for (const i = 0; i <= fi.files.length - 1; i++) {
+
+                        const fsize = fi.files.item(i).size;
+                        const file = Math.round((fsize / 1024));
+                        // The size of the file.
+                        //Change the max_file_size as per your need 
+                        const max_file_size = 30720;
+                        if (file >= max_file_size) {
+                            alert(
+                                "File too Big, please select a file less than 30mb (10 sec at 1080p or 5 sec at 4k)");
+                        } else {
+                            $('.ppp').removeClass("d-none").addClass('d-block');
+                            document.getElementById("form").submit();
+                        }
+                    }
+                }
+            };
+        });
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,5 @@
+__pycache__/
+.vscode/*
+static/uploaded_videos/*.mp4
+static/cartoonized_images/*.jpg
+cartoonize/
