@@ -28,5 +28,7 @@ Sample tutorial to install `ffmpeg` on MAC OS : https://superuser.com/questions/
 
 ### Processing Image (convert real photo into corresponding cartoon)
 > app_cartoonize_images.py
+
+
 result, from aaa.jpeg -> cartoonized_img_name.jpg
 
